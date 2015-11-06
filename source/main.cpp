@@ -82,12 +82,14 @@ int main(int argc, char* argv[])
 	if(bitsPerSample == 8)
 	{
 		ndspFormat = (channels == 1) ?
-		NDSP_FORMAT_MONO_PCM8 : NDSP_FORMAT_STEREO_PCM8;
+			NDSP_FORMAT_MONO_PCM8 :
+			NDSP_FORMAT_STEREO_PCM8;
 	}
 	else
 	{
 		ndspFormat = (channels == 1) ?
-		NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16;
+			NDSP_FORMAT_MONO_PCM16 :
+			NDSP_FORMAT_STEREO_PCM16;
 	}
 	
 	ndspChnReset(channel);
@@ -95,24 +97,14 @@ int main(int argc, char* argv[])
 	ndspChnSetRate(channel, float(sampleRate));
 	ndspChnSetFormat(channel, ndspFormat);
 	
-	ndspChnWaveBufClear(channel);
-	
 	// Create and play a wav buffer
 	ndspWaveBuf waveBuf;
 	std::memset(&waveBuf, 0, sizeof(ndspWaveBuf));
 	
-	if(bitsPerSample == 8)
-	{
-		waveBuf.data_pcm8 = reinterpret_cast<s8*>(data);
-	}
-	else
-	{
-		waveBuf.data_pcm16 = reinterpret_cast<s16*>(data);
-	}
-	
+	waveBuf.data_vaddr = reinterpret_cast<u32>(data);
 	waveBuf.nsamples = dataSize / (bitsPerSample >> 3);
 	waveBuf.looping = true; // Loop enabled
-	waveBuf.offset = 0;
+	waveBuf.status = NDSP_WBUF_FREE;
 	
 	DSP_FlushDataCache(data, dataSize);
 	
