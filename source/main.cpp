@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	
-	fseek(fp, 40, SEEK_SET);
-	fread(&dataSize, 4, 1, fp);
+	fseek(fp,0,SEEK_END);
+	dataSize = ftell(fp);
 	fseek(fp, 22, SEEK_SET);
 	fread(&channels, 2, 1, fp);
 	fseek(fp, 24, SEEK_SET);
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 	ndspWaveBuf waveBuf;
 	std::memset(&waveBuf, 0, sizeof(ndspWaveBuf));
 	
-	waveBuf.data_vaddr = reinterpret_cast<u32>(data);
+	waveBuf.data_vaddr = (const void*)data;
 	waveBuf.nsamples = dataSize / (bitsPerSample >> 3);
 	waveBuf.looping = true; // Loop enabled
 	waveBuf.status = NDSP_WBUF_FREE;
